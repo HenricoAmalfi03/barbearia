@@ -1,0 +1,28 @@
+
+estilo: escuro com botões dourado. site preto e dourado.
+
+Título do site da barbearia, pode ser modificada na página "Administrador"
+Logo da barbearia que pode ser alterado na página Administrador, bucket "barbearia" no supabase
+4 botões ("Agendar", "Eu sou barbeiro", "Administrador", "Instale o APP") obs: usaremos PWA para instalar o app. Cada barbeiro terá seu login e pra criar o login apenas o administrador (authentication user) pode criar usuários "barbeiros". Usuários barbeiros serão em tabela no supabase, admin serão authentication. 
+
+/barbeiro
+Pagina de login do barbeiro, após o login, terá uma dashbord com "Agendamentos", "Configurar Perfil"
+*Agendamentos: Todos os agendamentos terão 3 botões ("Compareceu", "Não compareceu" "Cancelar")
+*Configurar Perfil: Mudar nome e upload da foto de perfil (limite 5MB).
+*Clíente não pode agendar com o barbeiro no mesmo horário e dia que o outro cliente agendou.
+
+
+/admin
+Pagina de login do Administrador após o login, terá uma dashbord com "Adicionar barbeiro" (onde permitirá criar uma conta para o barbeiro, email e senha), "Relatório", "Configurar barbearia", "Calendário de funcionamento", "Serviços"
+*Adicionar barbeiro: Criar uma conta para o barbeiro (email + senha) que será armazenado em tabela no supabase
+*Relatório: Todos os clientes que os barbeiros realizar atendimento (confirmados), contabiliza em receita "R$", será um CRM basicamente. Terá botão "Extrair PDF" que permitirá baixar o relatório completo que mostrará clientes atendidos pelos barbeiros especificos agendados, valores etc)
+*Configurar barbearia: permite mudar o nome da barbearia, upload do logo, endereço no rodapé do site.
+*Calendário de funcionamento: Administrador configura os dias da semana que a barbearia funciona e horário de abertura e fechamento. EX: Segunda à sábado das 09:00 às 21:00 (administrador pode alterar da maneira que ele quiser conforme funcionamento da barbearia), isso irá interagir no agendamento.
+*Serviços: Adicionar ou remover serviços oferecidos.
+ 
+
+
+
+
+
+Rodapé do site com endereço da barbearia

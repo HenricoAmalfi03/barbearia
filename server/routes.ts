@@ -275,7 +275,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let query = db.select().from(appointments);
       if (filters.length > 0) {
-        query = query.where(and(...filters));
+        query = query.where(and(...filters)) as any;
       }
       
       const allAppointments = await query.orderBy(appointments.appointmentDate, appointments.appointmentTime);

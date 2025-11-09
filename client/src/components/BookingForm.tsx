@@ -75,7 +75,7 @@ export default function BookingForm() {
 
   const handleSubmit = () => {
     console.log("Booking submitted:", bookingData);
-    toast({ title: "Agendamento realizado com sucesso!", description: "Você receberá uma confirmação no WhatsApp." });
+    toast({ title: "Agendado com sucesso!" });
   };
 
   const selectedBarber = mockBarbers.find(b => b.id === bookingData.barberId);

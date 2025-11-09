@@ -33,7 +33,20 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("add-barber");
   const [shopName, setShopName] = useState("Barbearia Premium");
   const [address, setAddress] = useState("Rua dos Barbeiros, 123 - Centro - São Paulo, SP");
+  const [backgroundType, setBackgroundType] = useState<"image" | "color">("image");
+  const [backgroundColor, setBackgroundColor] = useState("#000000");
+  const [logo, setLogo] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const colorOptions = [
+    { name: "Preto", value: "#000000" },
+    { name: "Cinza Escuro", value: "#1a1a1a" },
+    { name: "Marrom Escuro", value: "#2d1b0f" },
+    { name: "Azul Escuro", value: "#0a1929" },
+    { name: "Verde Escuro", value: "#0f1c14" },
+    { name: "Vinho", value: "#2d0f1c" },
+  ];
 
   const handleAddBarber = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +66,28 @@ export default function AdminDashboard() {
   };
 
   const handleSaveSettings = () => {
-    console.log("Save settings:", { shopName, address });
+    console.log("Save settings:", { shopName, address, backgroundType, backgroundColor, logo, backgroundImage });
     toast({ title: "Configurações salvas!" });
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setLogo(reader.result as string);
+      reader.readAsDataURL(file);
+      toast({ title: "Logo carregado!" });
+    }
+  };
+
+  const handleBackgroundImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setBackgroundImage(reader.result as string);
+      reader.readAsDataURL(file);
+      toast({ title: "Imagem de fundo carregada!" });
+    }
   };
 
   const totalRevenue = mockRevenue.reduce((sum, item) => sum + item.value, 0);
@@ -211,11 +244,110 @@ export default function AdminDashboard() {
                     data-testid="input-shop-name"
                   />
                 </div>
+
                 <div>
                   <Label htmlFor="logo">Logo da Barbearia</Label>
-                  <Input id="logo" type="file" accept="image/*" data-testid="input-logo" />
+                  <Input 
+                    id="logo" 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleLogoUpload}
+                    data-testid="input-logo" 
+                  />
+                  {logo && (
+                    <div className="mt-3 p-4 bg-accent rounded-lg flex items-center gap-4">
+                      <img src={logo} alt="Logo preview" className="w-16 h-16 object-contain rounded" />
+                      <p className="text-sm text-muted-foreground">Logo carregado com sucesso</p>
+                    </div>
+                  )}
                   <p className="text-xs text-muted-foreground mt-1">Será armazenado no Supabase Storage</p>
                 </div>
+
+                <div>
+                  <Label>Tipo de Fundo da Página Inicial</Label>
+                  <div className="grid grid-cols-2 gap-3 mt-2">
+                    <Button
+                      type="button"
+                      variant={backgroundType === "image" ? "default" : "outline"}
+                      onClick={() => setBackgroundType("image")}
+                      data-testid="button-bg-image"
+                    >
+                      Imagem
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={backgroundType === "color" ? "default" : "outline"}
+                      onClick={() => setBackgroundType("color")}
+                      data-testid="button-bg-color"
+                    >
+                      Cor Sólida
+                    </Button>
+                  </div>
+                </div>
+
+                {backgroundType === "image" && (
+                  <div>
+                    <Label htmlFor="background-image">Imagem de Fundo</Label>
+                    <Input
+                      id="background-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBackgroundImageUpload}
+                      data-testid="input-background-image"
+                    />
+                    {backgroundImage && (
+                      <div className="mt-3 p-4 bg-accent rounded-lg">
+                        <img src={backgroundImage} alt="Background preview" className="w-full h-32 object-cover rounded" />
+                        <p className="text-sm text-muted-foreground mt-2">Imagem de fundo carregada</p>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">Será armazenado no Supabase Storage</p>
+                  </div>
+                )}
+
+                {backgroundType === "color" && (
+                  <div>
+                    <Label>Cor de Fundo</Label>
+                    <div className="grid grid-cols-3 gap-3 mt-2">
+                      {colorOptions.map((color) => (
+                        <button
+                          key={color.value}
+                          type="button"
+                          className={`p-4 rounded-lg border-2 transition-all hover-elevate ${
+                            backgroundColor === color.value ? "border-primary ring-2 ring-primary" : "border-border"
+                          }`}
+                          style={{ backgroundColor: color.value }}
+                          onClick={() => setBackgroundColor(color.value)}
+                          data-testid={`button-color-${color.name}`}
+                        >
+                          <span className="text-xs font-medium text-primary block mt-2">{color.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mt-3">
+                      <Label htmlFor="custom-color" className="text-xs">Ou escolha uma cor personalizada:</Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          id="custom-color"
+                          type="color"
+                          value={backgroundColor}
+                          onChange={(e) => setBackgroundColor(e.target.value)}
+                          className="w-20 h-10"
+                          data-testid="input-custom-color"
+                        />
+                        <Input
+                          type="text"
+                          value={backgroundColor}
+                          onChange={(e) => setBackgroundColor(e.target.value)}
+                          placeholder="#000000"
+                          className="flex-1"
+                          data-testid="input-color-hex"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <Label htmlFor="address">Endereço</Label>
                   <Input
@@ -225,6 +357,7 @@ export default function AdminDashboard() {
                     data-testid="input-address"
                   />
                 </div>
+
                 <Button onClick={handleSaveSettings} data-testid="button-save-settings">
                   Salvar Configurações
                 </Button>

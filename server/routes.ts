@@ -411,8 +411,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         diagnostics.database.connected = true;
         diagnostics.tables.barbershop_settings = true;
         diagnostics.counts.barbershop_settings = settingsTest.length;
-      } catch (e) {
+      } catch (e: any) {
         diagnostics.database.connected = false;
+        (diagnostics as any).database.error = e.message;
       }
 
       try {

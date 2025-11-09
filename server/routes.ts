@@ -383,6 +383,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============ DATABASE DIAGNOSTIC ENDPOINT ============
+  app.get("/api/diagnostic", async (req, res) => {
+    try {
+      const diagnostics = {
+        database: {
+          connected: false,
+          url: process.env.DATABASE_URL ? "configured" : "missing",
+        },
+        tables: {
+          barbershop_settings: false,
+          barbers: false,
+          services: false,
+          appointments: false,
+          operating_hours: false,
+        },
+        supabase: {
+          url: process.env.VITE_SUPABASE_URL ? "configured" : "missing",
+          anonKey: process.env.VITE_SUPABASE_ANON_KEY ? "configured" : "missing",
+        },
+        counts: {} as Record<string, number>,
+      };
+
+      try {
+        // Test database connection
+        const settingsTest = await db.select().from(barbershopSettings).limit(1);
+        diagnostics.database.connected = true;
+        diagnostics.tables.barbershop_settings = true;
+        diagnostics.counts.barbershop_settings = settingsTest.length;
+      } catch (e) {
+        diagnostics.database.connected = false;
+      }
+
+      try {
+        const barbersTest = await db.select().from(barbers).limit(1);
+        diagnostics.tables.barbers = true;
+        diagnostics.counts.barbers = barbersTest.length;
+      } catch (e) {}
+
+      try {
+        const servicesTest = await db.select().from(services).limit(1);
+        diagnostics.tables.services = true;
+        diagnostics.counts.services = servicesTest.length;
+      } catch (e) {}
+
+      try {
+        const appointmentsTest = await db.select().from(appointments).limit(1);
+        diagnostics.tables.appointments = true;
+        diagnostics.counts.appointments = appointmentsTest.length;
+      } catch (e) {}
+
+      try {
+        const hoursTest = await db.select().from(operatingHours).limit(1);
+        diagnostics.tables.operating_hours = true;
+        diagnostics.counts.operating_hours = hoursTest.length;
+      } catch (e) {}
+
+      res.json(diagnostics);
+    } catch (error: any) {
+      res.status(500).json({ 
+        error: "Diagnostic failed", 
+        message: error.message 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
